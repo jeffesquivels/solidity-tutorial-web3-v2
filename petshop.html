@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+
+  <!-- Fallback for Font family below in noscript [*] -->
+  <script type="text/javascript">
+  WebFontConfig = {
+    google: { families: [ 'Oswald:300,400,700',  'Open+Sans:400,700' ] }
+  };
+  (function() {
+    var wf = document.createElement('script');
+    wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
+    '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+    wf.type = 'text/javascript';
+    wf.async = 'true';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(wf, s);
+  })(); </script>
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="Your Ethereum Swiss Army Knife">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="news_keywords" content="solidity, dapps, contracts, smart contracts" />
+  <meta name="standout" content="http://truffleframwork.com" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Tienda de adopción de animales en Ethereum -- Su primer dApp</title>
+
+  <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+  <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+
+  <link rel="stylesheet" href="./styles/main.css">
+
+  <noscript>
+    <!-- [*] Web fonts for no-js -->
+    <link href='http://fonts.googleapis.com/css?family=Oswald:300,400,700%7COpen+Sans:400,700' rel='stylesheet' type='text/css'>
+  </noscript>
+
+</head>
+
+<body>
+  <main>
+    <section class="Tutorials">
+      <section class="MainContent">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="pet-shop-header">
+              <img src="images/pet-shop/petshop.png" alt="Ethereum Pet Shop">
+            </div>
+
+            <h1><a name="ethereum-pet-shop" class="anchor" href="#ethereum-pet-shop"><span class="header-link" style="z-index: 9999999741">&nbsp;</span></a>ADOPCIÓN DE ANIMALES CON ETHEREUM</h1>
+            <p>Este tutorial está pensado para <strong>principiantes en dApps pero que tienen conocimientos de HTML, CSS y JavaScript</strong>; asume que tiene conocimiento básico conceptual de Ethereum y contratos inteligentes.</p>
+            <p>En este tutorial se cubrirá:</p>
+            <ul>
+              <li>Dejar listo el ambiente de desarrollo</li>
+              <li>Crear un proyecto de Truffle usando una Truffle Box</li>
+              <li>Escribir y probar un contrato inteligente</li>
+              <li>Crear una interfaz de usuario para interactuar con nuestro contrato inteligente</li>
+            </ul>
+            <h2><a name="project-brief" class="anchor" href="#project-brief"><span class="header-link" style="z-index: 9999999740">&nbsp;</span></a>Resumen del proyecto</h2><p>Pedro Pérez de la Tienda de Adopción de Animales Pérez S.A. está interesado en usar Ethereum para manejar su sistema de adopción de mascotas. La tienda tiene un espacio para 16 mascotas, y ya tienen una base de datos de mascotas. Como una prueba de concepto inicial, Pedro quiere ver una Dapp que asocia una dirección de Ethereum con la mascota quiere adoptar. La estructura y el diseño del sitio web los provee el cliente. Lo único que nos toca a nosotros es escribir el contrato inteligente y la lógica que iría en la interfaz del sitio para interactuar con el dicho contrato.</p>
+            <p>Empecemos por dejar listo el ambiente de desarrollo.</p>
+            <h2><a name="setting-up-the-development-environment" class="anchor" href="#setting-up-the-development-environment"><span class="header-link" style="z-index: 9999999739">&nbsp;</span></a>Dejando listo el ambiente de desarrollo</h2><p>Las siguientes aplicaciones son los requerimientos esenciales para instalar Truffle:</p>
+            <ul>
+              <li><a href="https://nodejs.org/en/">Node.js v6+ LTS y NPM (viene con Node)</a></li>
+              <li><a href="https://git-scm.com/">Git</a></li>
+            </ul>
+            <p>Una vez teniendo estos instalados, sólo necesitamos ejecutar un comando con privilegios de administrador (usando <code>sudo</code> en el caso de Linux y MacOS X) para instalar Truffle:</p>
+            <ul>
+              <li><code>npm install -g truffle</code></li>
+            </ul>
+            <h2><a name="creating-a-truffle-project" class="anchor" href="#creating-a-truffle-project"><span class="header-link" style="z-index: 9999999738">&nbsp;</span></a>Creando un proyecto con Truffle</h2><p>Truffle se inicializa en el directorio actual. Entonces, creemos un directorio llamado  “tutorial-adopcion” en su carpeta de desarrollo. Creamos una <code>Truffle Box</code> especial sólo para este tutorial, así que ya tendrá lista una estructura básica para el proyecto y así como también código para la interfaz de usuario. Abra una ventana de consola y ejecute los siguientes comandos:</p>
+<pre class=" language-shell"><code class=" language-shell">// Se crea el directorio.
+mkdir tutorial-adopcion
+
+// Navegamos hacia el directorio.
+cd tutorial-adopcion
+
+// Inicializamos Truffle con el código básico
+truffle unbox pet-shop
+</code></pre>
+            <p></p>
+            <p class="alert alert-info" style="margin-top: -2rem; margin-bottom: 3rem;">
+              <strong>NOTA</strong>: Truffle puede ser inicializado de distintas formas. Otra forma de inicializarlo es con el comando <code>truffle init</code>, que crea un proyecto de Truffle vacío sin contratos de ejemplo incluídos.
+            </p>
+
+            <h3><a name="directory-structure" class="anchor" href="#directory-structure"><span class="header-link" style="z-index: 9999999737">&nbsp;</span></a>Estructura del directorio</h3><p>La estructura por defecto de un directorio de truffle se ve de esta manera:</p>
+            <ul>
+              <li><code>contracts/</code>: Contiene el código fuente en Solidity para nuestros contratos inteligentes. Hay un contrato importante aquí llamado <code>Migrations.sol</code>, del que hablaremos más adelante. ¡No borre este archivo!</li>
+              <li><code>migrations/</code>: Truffle usa un sistema de migraciones para manejar la subida al blockchain de contratos inteligentes. Cada migración es un contrato especial adicional encargado de llevar el registro de los cambios que se van realizando a nuestro contrato.</li>
+              <li><code>test/</code>: Contiene los tests para nuestros contratos inteligentes. Estos pueden ser escritos tanto en JavaScript como en Solidity.</li>
+              <li><code>truffle.js</code>: El archivo de configuración de Truffle.</li>
+            </ul>
+            <p>La “Truffle box” que usted desempaquetó tiene además algunos otros archivos y directorios extra, pero esos los veremos más adelante.</p>
+            <h2><a name="writing-the-smart-contract" class="anchor" href="#writing-the-smart-contract"><span class="header-link" style="z-index: 9999999736">&nbsp;</span></a>Escribiendo el contrato inteligente</h2><p>Empezaremos nuestra dApp escribiendo el contrato inteligente que servirá como lógica en el backend y como almacenamiento.</p>
+            <p>Empiece por crear un nuevo archivo <code>Adoption.sol</code> en el directorio <code>contracts/</code> con el siguiente contenido:</p>
+<pre class=" language-javascript"><code class=" language-javascript">pragma solidity <span class="token operator">^</span><span class="token number">0.4</span><span class="token punctuation">.</span><span class="token number">17</span><span class="token punctuation">;</span>
+
+contract Adoption <span class="token punctuation">{</span>
+
+<span class="token punctuation">}</span>
+</code></pre>
+            <p>Dos factores clave que debería notar:</p>
+            <ul>
+                <li>La versión mínima requerida de Solidity es definida al inicio del contrato: <code>pragma solidity ^0.4.17;</code>. El comando <code>pragma</code> significa &quot;<em>informacion adicional que sólo le importa al compilador</em>&quot;, mientras que el símbolo (^) significa “la versión especificada o superior”.</li>
+              <li>Como JavaScript o PHP, las declaraciones terminan con punto y coma.</li>
+            </ul>
+            <h3><a name="variable-setup" class="anchor" href="#variable-setup"><span class="header-link" style="z-index: 9999999735">&nbsp;</span></a>Definición de variables</h3><p>Solidity es un lenguaje tipado estáticamente, lo que significa que los tipos de datos como cadenas de caracteres (<em>strings</em>), enteros, y listas (<em>arrays</em>), etc. de las variables deben ser definidos. Solidity tiene un tipo de dato exclusivo (es decir, no se encuentra en otros lenguajes) llamado <strong>dirección (address)</strong>. Las direcciones son direcciones de Ethereum, que son almacenadas como valores de 20 bytes. Cada cuenta y cada contrato en el blockchain de Ethereum tiene una dirección, lo que permite enviar y recibir Ether desde y hacia esa dirección.</p>
+            <p>Continuando con el contrato, escriba la siguiente variable en la línea después de <code>contract Adoption {</code>.</p>
+<pre class=" language-javascript"><code class=" language-javascript">address<span class="token punctuation">[</span><span class="token number">16</span><span class="token punctuation">]</span> <span class="token keyword">public</span> adopters<span class="token punctuation">;</span>
+</code></pre>
+<p>Con esto estamos definiendo una sóla variable <code>adopters</code>, que es una <strong>lista (<em>array</em>)</strong> de direcciones de Ethereum. Las listas contienen sólo datos de un mismo tipo y pueden tener una longitud fija o variable. En este caso el tipo es dirección (<em>address</em>) y la longitud de la lista es 16. También notará que <code>adopters</code> es una variable pública. A todas las variables <strong>públicas</strong> se les crean <em>getters</em> automáticamente, pero en el caso de las listas, el <em>getter</em> creado automáticamente requiere una llave y sólo retornará un valor. Por lo que luego tendremos que crear una función propia que devuelva el <em>array</em> completo para usarlo en nuestra interfaz de usuario.</p>
+              <h3><a name="your-first-function-adopting-a-pet" class="anchor" href="#your-first-function-adopting-a-pet"><span class="header-link" style="z-index: 9999999734">&nbsp;</span></a>Su primera función: Adoptando una mascota</h3><p>Vamos a permitirle a los usuarios ingresar una solicitud para adoptar una mascota. Añada la siguiente función al contrato después de la variable que definimos antes.</p>
+<pre class=" language-javascript"><code class=" language-javascript"><span class="token keyword">function</span> <span class="token function">adopt</span><span class="token punctuation">(</span>uint petId<span class="token punctuation">)</span> <span class="token keyword">public</span> returns <span class="token punctuation">(</span>uint<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token function">require</span><span class="token punctuation">(</span>petId <span class="token operator">&gt;=</span> <span class="token number">0</span> <span class="token operator">&amp;&amp;</span> petId <span class="token operator">&lt;=</span> <span class="token number">15</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  adopters<span class="token punctuation">[</span>petId<span class="token punctuation">]</span> <span class="token operator">=</span> msg<span class="token punctuation">.</span>sender<span class="token punctuation">;</span>
+
+  <span class="token keyword">return</span> petId<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+            <p>Habrá notado que en Solidity deben ser especificados tanto los tipos de los parámetros de una función, así como los tipos de sus valores de retorno. En este caso, tomaremos un <code>petId</code> (un entero) y devolveremos también un entero.</p>
+            <p>Primero comprobemos que <code>petId</code> está en el rango permitido por nuestra lista <code>adopters</code>. Las listas en Solidity están indexadas iniciando en 0, por lo que el valor del ID debe estar entre 0 y 15, inclusive. Usamos la declaración <code>require()</code> para asegurarnos que el ID está en este rango.</p>
+            <p>Si el ID está en el rango, entonces añadimos la dirección que hizo la llamada a nuestra lista <code>adopters</code>. Para tener la dirección de la persona o contrato que llamó a nuestra función, usamos <strong>msg.sender</strong>.</p>
+            <p>Finalmente, devolvemos el mismo <code>petId</code> como valor de retorno, para que sirva de confirmación.</p>
+            <h3><a name="your-second-function-retrieving-the-adopters" class="anchor" href="#your-second-function-retrieving-the-adopters"><span class="header-link" style="z-index: 9999999733">&nbsp;</span></a>Su segunda función: Obteniendo las personas que adoptaron.</h3><p>Recuerde que mencionamos que los <em>getters</em> de las listas devuelven sólo el valor de una llave en particular. En este caso, nuestra UI (interfaz de usuario) necesita actualizar todos los estatus de adopción y para eso necesitaría hacer 16 llamadas al API, lo cual no es ideal. Escribamos, entonces, una función que devuelva el <em>array</em> completo.</p>
+            <p>Añada la siguiente función al contrato después de la función anterior:</p>
+<pre class=" language-javascript"><code class=" language-javascript"><span class="token keyword">function</span> <span class="token function">getAdopters</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">public</span> view returns <span class="token punctuation">(</span>address<span class="token punctuation">[</span><span class="token number">16</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> adopters<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+          <p>Dado que <code>adopters</code> ya fue declarada, podemos simplemente devolverla. Asegúrese de especificar el tipo de variable que devolverá (en este caso, es del mismo tipo de la variable <code>adopters</code>): <code>address[16]</code>.</p>
+          <h2><a name="compiling-and-migrating-the-smart-contract" class="anchor" href="#compiling-and-migrating-the-smart-contract"><span class="header-link" style="z-index: 9999999732">&nbsp;</span></a>Compilando y migrando el contrato inteligente</h2><h3><a name="compilation" class="anchor" href="#compilation"><span class="header-link" style="z-index: 9999999731">&nbsp;</span></a>Compilación</h3><p>Solidity es un lenguaje compilado, lo que significa que tenemos que compilar nuestro código Solidity a “<em>bytecode</em>” para que la EVM lo ejecute. Piense en este proceso como traducir nuestro código Solidity legible por humanos a algo que la EVM pueda entender. En esta parte compilaremos nuestros contratos a <em>bytecode</em> y lo pondremos en el blockchain para que podamos interactuar con él.</p>
+          <p>En la ventana de consola donde ejecutó <code>truffle unbox pet-shop</code> corra el comando <code>truffle compile</code>. Debería ver el siguiente resultado:</p>
+<pre class=" language-shell"><code class=" language-shell">Compiling ./contracts/Migrations.sol...
+Compiling ./contracts/Adoption.sol...
+Writing artifacts to ./build/contracts
+</code></pre>
+<h3><a name="migration" class="anchor" href="#migration"><span class="header-link" style="z-index: 9999999730">&nbsp;</span></a>Migración</h3><p>Ahora que compilamos con éxito nuestros contratos, ¡es hora de migrarlos al blockchain! Una <strong>migración</strong> es un script de <em>deployment</em> encargado de alterar el estado de los contratos de su aplicación, pasándolos de un estado al siguiente. Para la primera migración, usted simplemente esta subiendo código nuevo. Sin embargo, con el tiempo, las siguientes migraciones podrían mover información o reemplazar un contrato con uno nuevo.</p>
+<p>Usted verá un archivo de JavaScript en su directorio de <code>migrations/</code>: <code>1_initial_migration.js</code>. Este se encarga de hacer <em>deployment</em> del contrato <code>Migrations.sol</code> para administrar las migraciones de los siguientes contratos. Las migraciones son ejecutadas en un orden numerado.</p>
+          <p>Podemos dejar por el momento <code>1_initial_migration.js</code> tal y como está, lo único que hace es subir el contrato <code>Migrations.sol</code> para sólo migrar una vez aquellos contratos que no cambiemos en el futuro.</p>
+          <p>Cree el archivo <code>2_deploy_contracts.js</code> con el siguiente contenido:</p>
+<pre class=" language-javascript"><code class=" language-javascript"><span class="token keyword">var</span> Adoption <span class="token operator">=</span> artifacts<span class="token punctuation">.</span><span class="token function">require</span><span class="token punctuation">(</span><span class="token string">"Adoption"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span>deployer<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  deployer<span class="token punctuation">.</span><span class="token function">deploy</span><span class="token punctuation">(</span>Adoption<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Antes de poder migrar nuestro contrato al blockchain, necesitamos tener un blockchain corriendo. Para este tutorial, vamos a usar <a href="http://truffleframework.com/ganache/">Ganache</a>, un simulador del blockchain de Ethereum. Puede hacer doble click en el ícono de la aplicación para que se empiece a ejecutar. Esto iniciará un blockchain que se ejecuta localmente en el puerto 7545.</p>
+          <p>En la misma ventana de consola que corrimos el comando de compilar, corra <code>truffle migrate</code>. Deberá ver una salida como la siguiente:</p>
+<pre class=" language-shell"><code class=" language-shell">Using network 'development'.
+
+Running migration: 1_initial_migration.js
+  Deploying Migrations...
+  Migrations: 0x75175eb116b36ff5fef15ebd15cbab01b50b50d1
+Saving successful migration to network...
+Saving artifacts...
+Running migration: 2_deploy_contracts.js
+  Deploying Adoption...
+  Adoption: 0xb9f485451a945e65e48d9dd7fc5d759af0a89e21
+Saving successful migration to network...
+Saving artifacts...
+</code></pre>
+<p>Como puede ver, las migraciones fueron ejecutadas en orden, y fueron seguidas por la dirección en el blockchain de cada contrato (Nota: Sus direcciones van a ser diferentes a las que se muestran acá).</p>
+          <p>En Ganache, note que el estado del blockchain ha cambiado. El blockchain  ahora muestra que el bloque actual (que previamente era <code>0</code>), ahora es <code>4</code>. Además, antes la primera cuenta tenía originalmente 100 ether, y ahora tiene menos, dado que se rebajaron los costos transaccionales de la migración.</p>
+          <p><img src="images/pet-shop/ganache-migrated.png" alt="Ganache after migration"></p>
+          <p><em>Ganache luego de la migración</em></p>
+          <p>¡Felicidades! Acaba de escribir su primer contrato inteligente y lo ha subido en un blockchain local de prueba. Es tiempo de interactuar con nuestro contrato inteligente para asegurarnos de que hace lo que queremos.</p>
+          <h2><a name="testing-the-smart-contract" class="anchor" href="#testing-the-smart-contract"><span class="header-link" style="z-index: 9999999729">&nbsp;</span></a>Probando el contrato inteligente</h2><p>Truffle es muy flexible cuando se trata de hacer pruebas de contratos. Las pruebas se pueden hacer en JavaScript o en Solidity. Para la sesión de hoy haremos nuestros <em>tests</em> en Solidity.</p>
+          <p>Empiece por crear el contrato <code>TestAdoption.sol</code> en el directorio <code>test/</code> con el siguiente contenido:</p>
+<pre class=" language-javascript"><code class=" language-javascript">pragma solidity <span class="token operator">^</span><span class="token number">0.4</span><span class="token punctuation">.</span><span class="token number">17</span><span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> <span class="token string">"truffle/Assert.sol"</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token string">"truffle/DeployedAddresses.sol"</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token string">"../contracts/Adoption.sol"</span><span class="token punctuation">;</span>
+
+contract TestAdoption <span class="token punctuation">{</span>
+  Adoption adoption <span class="token operator">=</span> <span class="token function">Adoption</span><span class="token punctuation">(</span>DeployedAddresses<span class="token punctuation">.</span><span class="token function">Adoption</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span>
+</code></pre>
+          <p>Empezamos el contrato importando 3 archivos:</p>
+          <ul>
+              <li><code>Assert.sol</code>: nos provee varios <em>asserts</em> que podemos usar en nuestras pruebas. Un <strong><em>assert</em></strong> revisa cosas como igualdad, desigualdad, o valores vacíos para devolver un valor booleano diciéndonos si pasó o falló la condición que se estaba probando. <a href="https://github.com/trufflesuite/truffle-core/blob/master/lib/testing/Assert.sol">Aquí hay una lista de todos los <em>asserts</em> incluídos con Truffle</a>.</li>
+              <li><code>DeployedAddresses.sol</code>: Cuando se corren las pruebas, Truffle hará <em>deployment</em> de una instancia nueva del contrato a Ganache. Este código obtiene la dirección del contrato recién subido.</li>
+            <li>El contrato que queremos probar (<code>Adoption.sol</code>).</li>
+          </ul>
+          <p>Después, definimos una variable (usable por todas las funciones) que contiene la referencia al contrato que se va a probar, llamando a <code>DeployedAddresses</code> para obtener su dirección.</p>
+          <h3><a name="testing-the-adopt-function" class="anchor" href="#testing-the-adopt-function"><span class="header-link" style="z-index: 9999999728">&nbsp;</span></a>Probando la función adopt()</h3><p>Para probar la función adopt, recuerde que cuando es ejecutada con éxito devuelve el <code>petId</code> respectivo. Nos podemos asegurar que el ID que devuelve es el correcto al comparar el valor de retorno de <code>adopt()</code> con el ID que le pasamos.</p>
+          <p>Añada la siguiente función en el contrato <code>TestAdoption.sol</code>, después de la declaración de <code>Adoption</code>:</p>
+<pre class=" language-javascript"><code class=" language-javascript"><span class="token keyword">function</span> <span class="token function">testUserCanAdoptPet</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">public</span> <span class="token punctuation">{</span>
+  uint returnedId <span class="token operator">=</span> adoption<span class="token punctuation">.</span><span class="token function">adopt</span><span class="token punctuation">(</span><span class="token number">8</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  uint expected <span class="token operator">=</span> <span class="token number">8</span><span class="token punctuation">;</span>
+
+  Assert<span class="token punctuation">.</span><span class="token function">equal</span><span class="token punctuation">(</span>returnedId<span class="token punctuation">,</span> expected<span class="token punctuation">,</span> <span class="token string">"La adopción de la mascota con ID 8 debería estar registrada."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>Aquí llamamos a la función del contrato con el ID de 8. Luego declaramos el valor esperado (8). Finalmente, pasamos el valor real que obtuvimos, el valor esperado, y un mensaje de error (que es impreso si la prueba falla) a <code>Assert.equal()</code>.</p>
+<h3><a name="testing-retrieval-of-a-single-pet-39-s-owner" class="anchor" href="#testing-retrieval-of-a-single-pet-39-s-owner"><span class="header-link" style="z-index: 9999999727">&nbsp;</span></a>Probando obtener al dueño de una mascota.</h3><p>Como dijimos antes, las variables públicas tienen <em>getters</em> automáticamente, por esto, podemos pedir las direcciones guardadas por nuestro <em>test</em> de adopción anterior. La información guardada persistirá durante la duración de nuestras pruebas, así que la adopción de la mascota 8 puede ser revisada por otros <em>tests</em>.</p>
+<pre class=" language-javascript"><code class=" language-javascript"><span class="token keyword">function</span> <span class="token function">testGetAdopterAddressByPetId</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">public</span> <span class="token punctuation">{</span>
+  address expected <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">;</span>
+
+  address adopter <span class="token operator">=</span> adoption<span class="token punctuation">.</span><span class="token function">adopters</span><span class="token punctuation">(</span><span class="token number">8</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  Assert<span class="token punctuation">.</span><span class="token function">equal</span><span class="token punctuation">(</span>adopter<span class="token punctuation">,</span> expected<span class="token punctuation">,</span> <span class="token string">"El dueño de la mascota con ID 8 debería estar registrado."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>Ya que el contrato <code>TestAdoption</code> será el que envíe la transacción, definimos el valor esperado como <strong>this</strong>, una variable disponible en todas las funciones que guarda la dirección actual del contrato. De allí podemos probar la igualdad de los dos valores.</p>
+<h3><a name="testing-retrieval-of-all-pet-owners" class="anchor" href="#testing-retrieval-of-all-pet-owners"><span class="header-link" style="z-index: 9999999726">&nbsp;</span></a>Probando obtener todos los dueños de mascotas.</h3><p>Ya que los <em>arrays</em> solo pueden devolver un valor al recibir una llave específica, habíamos creado nuestra propia función de <em>get</em> para obtener el <em>array</em> entero (con todos sus valores).</p>
+<pre class=" language-javascript"><code class=" language-javascript"><span class="token keyword">function</span> <span class="token function">testGetAdopterAddressByPetIdInArray</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">public</span> <span class="token punctuation">{</span>
+  address expected <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">;</span>
+
+  address<span class="token punctuation">[</span><span class="token number">16</span><span class="token punctuation">]</span> memory adopters <span class="token operator">=</span> adoption<span class="token punctuation">.</span><span class="token function">getAdopters</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  Assert<span class="token punctuation">.</span><span class="token function">equal</span><span class="token punctuation">(</span>adopters<span class="token punctuation">[</span><span class="token number">8</span><span class="token punctuation">]</span><span class="token punctuation">,</span> expected<span class="token punctuation">,</span> <span class="token string">"El dueño de la mascota con ID 8 debería estar registrado."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>Note el atributo <strong><em>memory</em></strong> en <code>adopters</code>. Este atributo le dice a Solidity que guarde temporalmente el atributo en memoria, en lugar de guardarlo en el almacenamiento del contrato. Ya que <code>adopters</code> es un array, y sabemos que en el primer test de adopción adoptamos la mascota 8, comparamos la dirección de prueba con la posición 8 en el array.</p>
+    <h3><a name="running-the-tests" class="anchor" href="#running-the-tests"><span class="header-link" style="z-index: 9999999725">&nbsp;</span></a>Corriendo las pruebas</h3><p>Antes de empezar a probar nuestros contratos, necesitará tener Ganache corriendo. Los más probable es que siga corriendo desde el paso donde migramos los contratos, si no, ejecútelo de nuevo.</p>
+    <p>Corra <code>truffle test</code>. Si todas las pruebas pasan, verá una salida como la siguiente:</p>
+<pre class=" language-shell"><code class=" language-shell">Using network 'development'.
+
+Compiling ./contracts/Adoption.sol...
+Compiling ./test/TestAdoption.sol...
+Compiling truffle/Assert.sol...
+Compiling truffle/DeployedAddresses.sol...
+
+
+  TestAdoption
+    ✓ testUserCanAdoptPet (91ms)
+    ✓ testGetAdopterAddressByPetId (70ms)
+    ✓ testGetAdopterAddressByPetIdInArray (89ms)
+
+
+  3 passing (670ms)
+</code></pre>
+<p>Note que los valores de los tiempos pueden ser diferentes.</p>
+    <h2><a name="creating-a-ui-to-interact-with-our-smart-contract" class="anchor" href="#creating-a-ui-to-interact-with-our-smart-contract"><span class="header-link" style="z-index: 9999999724">&nbsp;</span></a>Creando una interfaz de usuario para interactuar con nuestro contrato inteligente</h2><p>Ahora que hemos creado nuestro contrato, lo subimos en nuestro blockchain de prueba y que confirmamos que podemos interactuar con él mediante la consola, ¡es hora de crear una interfaz de usuario para que el mundo lo use!</p>
+    <p>Cuando desempaquetó la Truffle Box <code>pet-shop</code> al inicio de este tutorial, se creó el código para el front-end del sistema de adopciones. Ese código está en el directorio <code>src</code>.</p>
+    <p>El front-end no usa ningún build system (como webpack, grunt, etc.) para ser lo más simple posible. Si ha trabajado con cualquier sistema para front-end escrito en JavaScript, se sentirá en casa. La estructura base de la aplicación está allí, completaremos las funciones que están relacionadas con la interacción con Ethereum. De esta forma, usted puede tomar este conocimiento y aplicarlo al sistema de su propia aplicación.</p>
+    <h3><a name="instantiating-web3" class="anchor" href="#instantiating-web3"><span class="header-link" style="z-index: 9999999723">&nbsp;</span></a>Instanciando Web3</h3><p>Abra el archivo <code>src/js/app.js</code> y eche un vistazo. Creamos un objeto global <code>App</code> para manejar nuestra aplicación, cargamos la información de la mascota en <code>init()</code> y luego llamamos a la función <code>initWeb3()</code>. Web3 es una biblioteca de JavaScript para interactuar con el blockchain de Ethereum. Puede obtener información sobre las cuentas de usuario, enviar transacciones, interactuar con contratos inteligentes y más. Para más información puede revisar el <a href="https://github.com/ethereum/web3.js/">GitHub</a>.</p>
+    <p>Remueva el comentario de la función <code>initWeb3</code> y reemplácelo con lo siguiente:</p>
+    <pre class=" language-javascript"><code class=" language-javascript"><span class="token comment" spellcheck="true">// Inicializa web3 y apunta el proveedor hacia localhost.</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">typeof</span> web3 <span class="token operator">!==</span> <span class="token string">'undefined'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  App<span class="token punctuation">.</span>web3Provider <span class="token operator">=</span> web3<span class="token punctuation">.</span>currentProvider<span class="token punctuation">;</span>
+<span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+  <span class="token comment" spellcheck="true">// escoja el proveedor específico de Web3.providers</span>
+  App<span class="token punctuation">.</span>web3Provider <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Web3<span class="token punctuation">.</span>providers<span class="token punctuation">.</span>HttpProvider</span><span class="token punctuation">(</span><span class="token string">'http://localhost:7545'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+web3 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Web3</span><span class="token punctuation">(</span>App<span class="token punctuation">.</span>web3Provider<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Primero, revisamos si hay una instancia de web3 activa. Browsers de Ethereum como <a href="https://github.com/ethereum/mist">Mist</a> o Firefox/Chrome con la extensión <a href="https://metamask.io/">MetaMask</a> inyectan sus propias instancias de web3. Si una instancia inyectada de web3 está presente, obtenemos su proveedor y lo usamos para crear nuestro objeto web3.</p>
+<p>Si no hay una instancia de web3 presente, hacemos <em>fallback</em> creando nuestro objeto web3 basado en el proveedor local. Note que este tipo de <em>fallback</em> está bien para ambientes de desarrollo, pero es inseguro y no apto para usar en producción.</p>
+    <h3><a name="instantiating-the-contract" class="anchor" href="#instantiating-the-contract"><span class="header-link" style="z-index: 9999999722">&nbsp;</span></a>Instanciando el contrato</h3><p>Ahora que podemos interactuar con Ethereum por medio de web3, necesitamos instanciar nuestro contrato para que web3 sepa dónde encontrarlo y cómo funciona. Truffle tiene una biblioteca para ayudarnos con esto llamada <code>truffle-contract</code>. Mantiene la información sobre nuestro contrato sincronizada con nuestras migraciones, para no tener que cambiar la dirección de nuestro contrato manualmente (cada vez que se suba un nuevo cambio).</p>
+    <p>Remueva el comentario de la función <code>initContract</code> y reemplácelo con lo siguiente: </p>
+<pre class=" language-javascript"><code class=" language-javascript">$<span class="token punctuation">.</span><span class="token function">getJSON</span><span class="token punctuation">(</span><span class="token string">'Adoption.json'</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">var</span> AdoptionArtifact <span class="token operator">=</span> data<span class="token punctuation">;</span>
+  App<span class="token punctuation">.</span>contracts<span class="token punctuation">.</span>Adoption <span class="token operator">=</span> <span class="token function">TruffleContract</span><span class="token punctuation">(</span>AdoptionArtifact<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  App<span class="token punctuation">.</span>contracts<span class="token punctuation">.</span>Adoption<span class="token punctuation">.</span><span class="token function">setProvider</span><span class="token punctuation">(</span>App<span class="token punctuation">.</span>web3Provider<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token comment" spellcheck="true">// Use our contract to retieve and mark the adopted pets.</span>
+  <span class="token keyword">return</span> App<span class="token punctuation">.</span><span class="token function">markAdopted</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+  <p>Primero obtenemos el archivo de artefactos de nuestro contrato. Los <strong>artefactos</strong> son información acerca de nuestro contrato como su dirección y su ABI. El <strong>ABI (Interfaz de Aplicación Binaria)</strong> es un objeto de JavaScript que define como interactuar con el contrato, incluyendo sus variables, funciones y sus parámetros.</p>
+  <p>Una vez que tengamos los artefactos en nuestro <em>callback</em>, los pasamos a <code>TruffleContract()</code>. Esto crea una instancia del contrato con la que podemos interactuar.</p>
+  <p>Una vez que tenemos el contrato instanciado, definimos el proveedor de web3 usando el valor <code>App.web3Provider</code> que guardamos anteriormente cuando instanciamos web3.</p>
+  <p>Finalmente, llamamos a la función de la aplicación <code>markAdopted()</code> en caso de que ya hayan mascotas adoptadas. Encapsulamos esta lógica en una función separada ya que vamos a necesitamos actualizar la interfaz de usuario siempre que cambiemos el estado en el contrato.</p>
+  <h3><a name="getting-the-adopted-pets-and-updating-the-ui" class="anchor" href="#getting-the-adopted-pets-and-updating-the-ui"><span class="header-link" style="z-index: 9999999721">&nbsp;</span></a>Obteniendo las mascotas adoptadas y actualizando la interfaz de usuario</h3><p>Remueva el comentario de la función <code>markAdopted()</code> y reemplácelo con lo siguiente:</p>
+<pre class=" language-javascript"><code class=" language-javascript"><span class="token keyword">var</span> adoptionInstance<span class="token punctuation">;</span>
+
+App<span class="token punctuation">.</span>contracts<span class="token punctuation">.</span>Adoption<span class="token punctuation">.</span><span class="token function">deployed</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span>instance<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  adoptionInstance <span class="token operator">=</span> instance<span class="token punctuation">;</span>
+
+  <span class="token keyword">return</span> adoptionInstance<span class="token punctuation">.</span>getAdopters<span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span>adopters<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span>i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> adopters<span class="token punctuation">.</span>length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>adopters<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">!==</span> <span class="token string">'0x0000000000000000000000000000000000000000'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token function">$</span><span class="token punctuation">(</span><span class="token string">'.panel-pet'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">eq</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">find</span><span class="token punctuation">(</span><span class="token string">'button'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">text</span><span class="token punctuation">(</span><span class="token string">'Pending...'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">attr</span><span class="token punctuation">(</span><span class="token string">'disabled'</span><span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token keyword">catch</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>err<span class="token punctuation">.</span>message<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>En esta función, accedemos el contrato <code>Adoption</code> ya subido, luego llamamos a <code>getAdopters()</code> en esa instancia. Primero declaramos la variable <code>adoptionInstance</code> fuera del contrato para poder seguir accediendo a la instancia más adelante.</p>
+  <p>Un <strong><em>call</em></strong> (llamada) nos permite leer información del blockchain sin tener que mandar una transacción; lo que significa que no se necesita gastar Ether.</p>
+  <p>Después de llamar a <code>getAdopters()</code>, iteramos a través de los valores del array, revisando si hay una dirección guardada para cada mascota. Dado que el array contiene direcciones, Ethereum inicializa el array con 16 direcciones vacías. Por eso es que revisamos si hay una dirección con un string que denota una dirección vacía, en lugar de buscar un valor null u otro valor falso. Una vez que obtenemos un <code>petId</code> con una dirección correspondiente, desactivamos el botón de adoptar y cambiamos el texto del botón a “Pending...”, para que el usuario obtenga retroalimentación sobre lo que pasó con la mascota.</p>
+  <p>Finalmente, capturamos cualquier error que haya ocurrido y lo imprimimos en la consola.</p>
+  <h3><a name="handling-the-adopt-function" class="anchor" href="#handling-the-adopt-function"><span class="header-link" style="z-index: 9999999720">&nbsp;</span></a>Manejando la función adopt()</h3><p>Remueva el comentario de la función <code>handleAdopt</code> y reemplácelo con lo siguiente:</p>
+<pre class=" language-javascript"><code class=" language-javascript"><span class="token keyword">var</span> adoptionInstance<span class="token punctuation">;</span>
+
+web3<span class="token punctuation">.</span>eth<span class="token punctuation">.</span><span class="token function">getAccounts</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span>error<span class="token punctuation">,</span> accounts<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>error<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>error<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">var</span> account <span class="token operator">=</span> accounts<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+  App<span class="token punctuation">.</span>contracts<span class="token punctuation">.</span>Adoption<span class="token punctuation">.</span><span class="token function">deployed</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span>instance<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    adoptionInstance <span class="token operator">=</span> instance<span class="token punctuation">;</span>
+
+    <span class="token keyword">return</span> adoptionInstance<span class="token punctuation">.</span><span class="token function">adopt</span><span class="token punctuation">(</span>petId<span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token keyword">from</span><span class="token punctuation">:</span> account<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> App<span class="token punctuation">.</span><span class="token function">markAdopted</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token keyword">catch</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>err<span class="token punctuation">.</span>message<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+  <p>Primero, usamos web3 para obtener las cuentas asociadas con el usuario. En el callback, luego de revisar que no haya errores, seleccionamos la primera cuenta.</p>
+  <p>De ahí, obtenemos el contrato desplegado como hicimos antes y guardamos la instancia en <code>adoptionInstance</code>. Esta vez, vamos a mandar una <strong>transacción</strong> en lugar de un call. Las transacciones requieren una dirección desde donde se mandan (<em>"From"</em>) y tienen un costo asociado. Este costo, pagado en Ether, es llamado <strong>gas</strong>. El costo de gas es la tarifa por realizar procesamiento computacional y/o guardar información en un contrato de Ethereum. Enviamos la transacción ejecutando la función <code>adopt()</code> con la identificación de la mascota y un objeto que contiene la dirección de la cuenta, que guardamos anteriormente en la variable <code>account</code>.</p>
+  <p>El resultado de mandar una transacción es el objeto transacción. Si no hay errores, se procede a llamar a la función <code>markAdopted()</code> para sincronizar la interfaz de usuario con la información que acabamos de guardar.</p>
+  <p>¡Ahora es momento de usar nuestra Dapp!</p>
+  <h2><a name="using-our-dapp-in-chrome" class="anchor" href="#using-our-dapp-in-chrome"><span class="header-link" style="z-index: 9999999719">&nbsp;</span></a>Usando nuestra Dapp en un navegador</h2><h3><a name="installing-and-configuring-metamask" class="anchor" href="#installing-and-configuring-metamask"><span class="header-link" style="z-index: 9999999718">&nbsp;</span></a>Instalando y configurando MetaMask</h3><p>La forma más fácil de interactuar con nuestra Dapp en un navegador es bajando e instalando la extensión MetaMask (disponible tanto para Firefox como para Chrome). Una vez instalada, verá el ícono de un zorro de MetaMask junto a su barra de dirección.</p>
+  <p>Haga click en el ícono de MetaMask y verá aparecer en su pantalla:</p>
+  <div class="text-center">
+    <img src="images/pet-shop/metamask-1.png" alt="MetaMask Unlock">
+    <br/><br/>
+  </div>
+
+  <p>Ahora necesita usar el Mnemonic (la lista de 12 palabras) que está en la parte superior de Ganache. Copie esta frase, luego haga click en "Import existing DEN" y péguelo en el primer campo. Ahora elija una contraseña y haga clic en OK.</p>
+  <div class="text-center">
+    <img src="images/pet-shop/metamask-3.png" alt="MetaMask Mnemonic">
+    <br/><br/>
+  </div>
+
+  <p>Luego, si en la esquina superior izquierda dice algo diferente a “Private Network”, hágale click y verá una lista de redes posibles. Seleccione "Custom RPC" para usar Ganache:</p>
+  <div class="text-center">
+    <img src="images/pet-shop/metamask-2.png" alt="MetaMask Network Choices">
+    <br/><br/>
+  </div>
+
+  <p>En la casilla titulada "New RPC URL" introduzca <code>http://127.0.0.1:7545</code> y haga click en <strong>Save</strong>:</p>
+  <div class="text-center">
+    <img src="images/pet-shop/metamask-2-1.png" alt="MetaMask Custom RPC">
+    <br/><br/>
+  </div>
+
+  <p>Ahora que conectamos MetaMask con Ganache, será llevado a la pantalla de cuentas, cada cuenta creada por Ganache tiene 100 Ether. Notará que este monto es ligeramente inferior en la primer cuenta, pues esa fue la cuenta que pagó el gas para subir los contratos.</p>
+  <div class="text-center">
+    <img src="images/pet-shop/metamask-4.png" alt="MetaMask Account">
+    <br/><br/>
+  </div>
+
+  <p>Ahora que MetaMask está configurado, podemos empezar nuestro servidor web y usar el Dapp.</p>
+  <h3><a name="installing-and-configuring-lite-server" class="anchor" href="#installing-and-configuring-lite-server"><span class="header-link" style="z-index: 9999999717">&nbsp;</span></a>Instalando y configurando lite-server</h3><p>Estamos usando lite-server para servir nuestro archivos estáticos, esto viene con la Truffle box, pero veamos cómo funciona.</p>
+  <p>Note el archivo <code>bs-config.json</code> en la carpeta raíz del proyecto con el siguiente contenido:</p>
+<pre class=" language-javascript"><code class=" language-javascript"><span class="token punctuation">{</span>
+  <span class="token string">"server"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    <span class="token string">"baseDir"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"./src"</span><span class="token punctuation">,</span> <span class="token string">"./build/contracts"</span><span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>Esto le dice a <code>lite-server</code> cuales archivos incluir en nuestro directorio base. Añadimos el directorio <code>./src</code> que contiene nuestros archivos web y <code>./build/contracts</code> que contiene los artefactos de nuestros contratos. El punto antes de la barra significa: “busque esto en el directorio actual”.</p>
+<p>También añadimos un comando de desarrollo al objeto <code>scripts</code> en el archivo <code>package.json</code> en el directorio padre del proyecto. El objeto <code>scripts</code> nos permite tener aliases para comandos de consola con un sólo comando de npm. En este caso estamos añadiendo un sólo comando, pero es posible tener configuraciones más complejas. Así es como su archivo debería verse:</p>
+<pre class=" language-javascript"><code class=" language-javascript"><span class="token string">"scripts"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+  <span class="token string">"dev"</span><span class="token punctuation">:</span> <span class="token string">"lite-server"</span><span class="token punctuation">,</span>
+  <span class="token string">"test"</span><span class="token punctuation">:</span> <span class="token string">"echo \"Error: no test specified\" &amp;&amp; exit 1"</span>
+<span class="token punctuation">}</span><span class="token punctuation">,</span>
+</code></pre>
+<p>Esto le dice a npm que corra nuestra instalación local de <code>lite-server</code> cuando ejecutemos <code>npm run dev</code> desde la consola.</p>
+<h3><a name="using-the-dapp" class="anchor" href="#using-the-dapp"><span class="header-link" style="z-index: 9999999716">&nbsp;</span></a>Usando el Dapp</h3><p>Ejecute el comando <code>npm run dev</code>.  El servidor de desarrollo se iniciará y automáticamente abrirá una nueva pestaña del navegador con nuestra Dapp.</p>
+<p>Ahora, simplemente haga click en el botón de adoptar la mascota de su elección y será notificado por MetaMask si desea aprobar la transacción. Hágalo, y verá el botón cambiar a deshabilitado con el texto “En proceso…”, tal y como habíamos especificado.</p>
+<div class="text-center container">
+  <img src="images/pet-shop/adoption1.jpeg" alt="Pet Shop Adoption Step 1">
+  <p class="caption">Después de hacer click en el botón de adoptar, MetaMask le pide revisar y aceptar la transacción</p>
+</div>
+
+<div class="text-center container">
+  <img src="images/pet-shop/adoption2.jpeg" alt="Pet Shop Adoption Step 2">
+  <p class="caption">Una vez que la transacción se completa, verá el cambio en el botón y la transacción aparecerá en su cuenta de MetaMask.</p>
+  <br/><br/>
+</div>
+
+<p><strong>¡Felicidades!</strong> Acaba de completar el primer gran paso para convertirse un desarrollador de Dapps. Ya tiene todas las herramientas necesarias para desarrollar localmente y ya puede empezar a hacer Dapps más avanzadas.
+</p>
+
+</div>
+</div>
+</section>
+</section>
+
+</main>
+
+</body>
+</html>
